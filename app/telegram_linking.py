@@ -1,16 +1,41 @@
+import logging
+import re
+
 from telegram import Update
 from telegram.ext import Application, CommandHandler, ContextTypes
-import logging
 from config import TOKEN
+
 
 # ============================================================
 # 1. LOGGING SETUP
 # ============================================================
 
+class TokenFilter(logging.Filter):
+    def filter(self, record):
+        message = record.getMessage()
+
+        # Hide Telegram bot token
+        message = re.sub(
+            r'/bot\d+:[A-Za-z0-9_-]+',
+            '/bot***',
+            message
+        )
+
+        record.msg = message
+        record.args = ()
+
+        return True
+
+
 logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     level=logging.INFO
 )
+
+# Hide ONLY the token, but keep httpx INFO logs
+for handler in logging.getLogger().handlers:
+    handler.addFilter(TokenFilter())
+
 
 logger = logging.getLogger(__name__)
 
@@ -18,7 +43,7 @@ logger.info("🚀 Program started")
 
 
 # ============================================================
-# 4. /start COMMAND FUNCTION
+# 2. /start COMMAND FUNCTION
 # ============================================================
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -43,7 +68,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 # ============================================================
-# 5. CREATE TELEGRAM APPLICATION
+# 3. CREATE TELEGRAM APPLICATION
 # ============================================================
 
 logger.info("🏗️ Creating Telegram Application...")
@@ -54,7 +79,7 @@ logger.info("✅ Telegram Application created")
 
 
 # ============================================================
-# 6. ADD /start COMMAND HANDLER
+# 4. ADD /start COMMAND HANDLER
 # ============================================================
 
 logger.info("🔗 Registering /start command handler...")
@@ -67,7 +92,7 @@ logger.info("✅ /start handler registered")
 
 
 # ============================================================
-# 7. START BOT
+# 5. START BOT
 # ============================================================
 
 logger.info("🤖 Starting Telegram bot...")

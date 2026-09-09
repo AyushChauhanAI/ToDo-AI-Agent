@@ -1,0 +1,36 @@
+Project: Personal Activity Tracker (Conversational)
+
+Core idea: Tum normal baat karte ho ("2 ghante padha, gym kiya"), AI usko samajh ke database mein log kar deta hai. Weekend pe khud-ba-khud summary aati hai — kitne hours kis cheez mein gaye.
+
+1. Entry points (3 jagah se log kar sakte ho)
+Apna web app — text/voice box + ek dashboard
+MCP tool — Claude/Cursor/ChatGPT se bhi "aaj gym kiya" bol ke log ho jaye (tumhare [[mcp-sql-project]] wale MCP+SQLAlchemy setup ka hi extension)
+Telegram/WhatsApp bot — chat karke log karo
+
+Teeno ek hi database ko hit karenge, so data hamesha sync rahega.
+
+2. Input handling
+Text aur voice note dono chalenge (voice ke liye speech-to-text — Groq Whisper best fit hai tumhare existing Groq usage ke hisaab se)
+Ek message mein multiple activities ho sakti hain ("padha + gym + soya") — AI sabko alag-alag parse karke log karega
+3. Categories
+Fixed list nahi — AI khud dynamically naya category bana lega jo bhi tum bologe (jaise "swimming kiya" bolo toh "Swimming" naya category ban jayega)
+4. Missing duration ka case
+Agar duration nahi bataya (jaise "gym kiya"), AI puchega
+Agar tab bhi nahi diya, next message pe ek aur baar puchega
+Uske baad nahi puchega — summary mein wo activity "time not tracked" wale alag bucket mein dikhegi
+5. Corrections
+Galti se galat log ho gaya toh natural language mein hi thik kar sakte ho ("nahi 3 ghante the") — koi edit button nahi chahiye, AI context se samajh ke update kar dega
+6. Weekly Summary
+Koi productivity % score nahi — bas category-wise total hours (study: 18h, exercise: 4h, sleep: 49h, entertainment: 8h — jaisa tumne example diya, bas percentage wala part hata ke)
+Automatically weekend par generate hoga (manually maangne ki zaroorat nahi)
+Web app ke dashboard pe charts/graphs mein dikhega
+Telegram/WhatsApp pe bhi ek message aayega jisme direct link hoga jo dashboard/summary pe le jaye
+7. No auth
+Single-user, personal tool — login/signup ka overhead nahi
+Rough Tech Flow (based on jo tum already use kar rahe ho)
+Message aata hai (web/telegram/whatsapp/MCP se) → text ya voice
+Voice ho toh → Groq Whisper se text mein convert
+Text → Groq LLM ko bhejo structured extraction ke liye (activity name, category, duration, date) — same pattern jo tumne mcp-sql-project mein NL→SQL ke liye use kiya
+Extracted data → SQLAlchemy ke through DB mein save (SQLite theek rahega personal use ke liye, simple hai)
+Agar duration missing → follow-up question trigger ho
+Weekend pe ek scheduled job (cron/APScheduler) chalega jo us hafte ka data aggregate karke summary banayega aur Telegram/WhatsApp + web dashboard pe push karega

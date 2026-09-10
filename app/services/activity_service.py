@@ -1,8 +1,8 @@
 from datetime import datetime
 from sqlalchemy.orm import Session
 
-from app.models.schema_define import Activity
-from app.schemas.data_str import ActivityCreate
+from models.schema_define import Activity
+from schemas.data_str import ActivityCreate
 
 
 def create_activity(db: Session, data: ActivityCreate):

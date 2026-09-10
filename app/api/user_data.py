@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
-from app.database import SessionLocal
-from app.schemas.data_str import ActivityCreate, ActivityResponse
-from app.services.activity_service import create_activity, get_activities
+from database import SessionLocal
+from schemas.data_str import ActivityCreate, ActivityResponse
+from services.activity_service import create_activity, get_activities
 
 router = APIRouter()
 

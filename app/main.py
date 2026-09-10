@@ -1,8 +1,8 @@
 from fastapi import FastAPI
 
-from app.database import Base, engine
-from app.models.schema_define import Activity
-from app.api.user_data import router
+from database import Base, engine
+from models.schema_define import Activity
+from api.user_data import router
 
 Base.metadata.create_all(bind=engine)
 

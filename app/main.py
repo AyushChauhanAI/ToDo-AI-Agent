@@ -4,6 +4,13 @@ from database import Base, engine
 from models.schema_define import Activity
 from api.user_data import router
 
+import logging
+
+logging.basicConfig(
+    level=logging.DEBUG,
+    format="%(asctime)s | %(levelname)s | %(name)s | %(message)s"
+)
+
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
